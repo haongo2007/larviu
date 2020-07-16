@@ -16,6 +16,10 @@
   </a>
 </p>
 
+# 
+<a href="http://54.169.234.110">
+    DEMO
+</a>
 # Larviu
 Larviu is a beautiful dashboard combination of [Laravel](https://laravel.com/), [Vue.js](https://github.com/vuejs/vue) and the UI Toolkit [Element](https://github.com/ElemeFE/element).
 
