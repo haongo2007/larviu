@@ -129,12 +129,13 @@ const actions = {
       resetRouter();
 
       // generate accessible routes map based on roles
-      const accessRoutes = dispatch('permission/generateRoutes', { roles, permissions });
-
+      const accessRoutes = dispatch('permission/generateRoutes', { roles, permissions },{ root: true});
       // dynamically add accessible routes
-      router.addRoutes(accessRoutes);
-
-      resolve();
+      
+      accessRoutes.then((accessRoutes) => {
+        router.addRoutes(accessRoutes);
+        resolve();
+      });
     });
   },
   // update avatar

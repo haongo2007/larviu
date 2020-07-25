@@ -48,7 +48,7 @@ export default {
 
 <style lang="scss" scoped>
 .user-bio {
-  margin-top: 20px;
+  margin: 20px 0;
   color: #606266;
   span {
     padding-left: 4px;

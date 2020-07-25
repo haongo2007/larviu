@@ -24,7 +24,7 @@
           @keyup.enter.native="handleLogin"
         />
         <span class="show-pwd" @click="showPwd">
-          <svg-icon icon-class="eye" />
+          <svg-icon :icon-class="eye" />
         </span>
       </el-form-item>
       <el-form-item>
@@ -74,6 +74,7 @@ export default {
       },
       loading: false,
       pwdType: 'password',
+      eye: 'eye',
       redirect: undefined,
       otherQuery: {},
     };
@@ -94,8 +95,10 @@ export default {
     showPwd() {
       if (this.pwdType === 'password') {
         this.pwdType = '';
+        this.eye = 'eye-open';
       } else {
         this.pwdType = 'password';
+        this.eye = 'eye';
       }
     },
     handleLogin() {
@@ -172,8 +175,12 @@ $light_gray:#eee;
   position: fixed;
   height: 100%;
   width: 100%;
-  background-color: $bg;
   .login-form {
+    .is-error{
+      border: 0.5px solid #ff4949;
+    }
+    background:$bg;
+    border-radius:5px;
     position: absolute;
     left: 0;
     right: 0;

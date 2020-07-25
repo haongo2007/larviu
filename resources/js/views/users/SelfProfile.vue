@@ -2,11 +2,11 @@
   <div class="app-container">
     <el-form v-if="user" :model="user">
       <el-row :gutter="20">
-        <el-col :span="6">
+        <el-col :xs="24" :sm="10" :md="8" :lg="6">
           <user-card :user="user" />
           <user-bio />
         </el-col>
-        <el-col :span="18">
+        <el-col :xs="24" :sm="14" :md="16" :lg="18">
           <user-activity :user="user" />
         </el-col>
       </el-row>

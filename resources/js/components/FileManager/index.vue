@@ -1,20 +1,16 @@
 <template>
     <div class="fm" v-bind:class="{ 'fm-full-screen': fullScreen }">
-      <navbar></navbar>
       <el-row :gutter="20">
-        <el-col :span="6">
+        <el-col :xs="24" :sm="8" :md="6" :lg="4" style="margin-bottom: 20px;">
           <folder-tree></folder-tree>
         </el-col>
-        <el-col :span="18">
+        <el-col :xs="24" :sm="16" :md="18" :lg="20">
           <template>
             <left-manager manager="left"
                           v-on:click.native="selectManager('left')"
                           v-on:contextmenu.native="selectManager('left')">
             </left-manager>
           </template>
-        </el-col>
-        <el-col :span="24">
-          <info-block></info-block>
         </el-col>
       </el-row>
       
@@ -31,12 +27,10 @@ import { mapState } from 'vuex';
 import HTTP from './http/axios';
 import EventBus from './eventBus';
 // Components
-import Navbar from './components/blocks/Navbar.vue';
 import FolderTree from './components/tree/FolderTree.vue';
 import LeftManager from './components/manager/Manager.vue';
 import RightManager from './components/manager/Manager.vue';
 import Modal from './components/modals/Modal.vue';
-import InfoBlock from './components/blocks/InfoBlock.vue';
 import ContextMenu from './components/blocks/ContextMenu.vue';
 import Notification from './components/blocks/Notification.vue';
 // Mixins
@@ -46,12 +40,10 @@ export default {
   name: 'FileManager',
   mixins: [translate],
   components: {
-    Navbar,
     FolderTree,
     LeftManager,
     RightManager,
     Modal,
-    InfoBlock,
     ContextMenu,
     Notification,
   },
@@ -229,7 +221,6 @@ export default {
   }
   .fm{
     background:#FFFFFF;
-    padding:40px;
   }
   tr.table-info{
     background:#e7faf0;

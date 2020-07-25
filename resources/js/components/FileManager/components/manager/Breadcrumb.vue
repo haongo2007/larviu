@@ -1,18 +1,14 @@
 <template>
     <div>
-      <el-alert style="margin-top:10px;"
-        type="success"
-        :closable="false">
-        <el-breadcrumb separator-class="el-icon-arrow-right" v-bind:class="[manager === activeManager ? 'active-manager' : 'bg-light']">
-          <el-breadcrumb-item v-on:click="selectMainDirectory" ><i class="far fa-hdd"></i></el-breadcrumb-item>
-          <el-breadcrumb-item v-for="(item, index) in breadcrumb"
-              v-bind:key="index"
-              v-bind:class="[breadcrumb.length === index + 1 ? 'active' : '']"
-              v-on:click="selectDirectory(index)">
-              {{ item }}
-          </el-breadcrumb-item>
-        </el-breadcrumb>
-      </el-alert>
+      <el-breadcrumb separator-class="el-icon-arrow-right" v-bind:class="[manager === activeManager ? 'active-manager' : 'bg-light']" class="my-breadcrumb">
+        <el-breadcrumb-item v-on:click="selectMainDirectory" ><i class="far fa-hdd"></i></el-breadcrumb-item>
+        <el-breadcrumb-item v-for="(item, index) in breadcrumb"
+            v-bind:key="index"
+            v-bind:class="[breadcrumb.length === index + 1 ? 'active' : '']"
+            v-on:click="selectDirectory(index)">
+            {{ item }}
+        </el-breadcrumb-item>
+      </el-breadcrumb>
     </div>
 </template>
 
@@ -81,3 +77,12 @@ export default {
   },
 };
 </script>
+<style scoped="sass">
+  .my-breadcrumb{
+    padding: 10px 0;
+    border-top: 1px solid;
+    border-bottom: 1px solid;
+    margin-top: 10px;
+    border-color: #e6ebf5;
+  }
+</style>

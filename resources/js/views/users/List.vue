@@ -260,6 +260,7 @@ export default {
     if (checkPermission(['manage permission'])) {
       this.getPermissions();
     }
+    console.log(this.permissions);
   },
   methods: {
     checkPermission,

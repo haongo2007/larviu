@@ -1,5 +1,5 @@
 <template>
-    <div>
+    <div style="margin-top:10px;">
         <el-tag>
             <span v-show="selectedCount">
                 {{ `${lang.info.selected} ${selectedCount}` }}
