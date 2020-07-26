@@ -24,11 +24,11 @@
 Larviu is a beautiful dashboard combination of [Laravel](https://laravel.com/), [Vue.js](https://github.com/vuejs/vue) and the UI Toolkit [Element](https://github.com/ElemeFE/element).
 
 ## Screenshot
-<p align="center">
+<!-- <p align="center">
   <img src="https://i.ibb.co/D5RZ37j/screen2.png" alt="screen2" border="0">
   <img src="https://i.ibb.co/gmhJrjt/screen.png" alt="screen" border="0">
   <img src="https://i.ibb.co/9yV0q7s/screen1.png" alt="screen1" border="0">
-</p>
+</p> -->
 
 ## Getting started
 
