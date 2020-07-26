@@ -17,6 +17,7 @@ export default {
     image: {
       type: String,
       required: true,
+      default: '',
     },
     zIndex: {
       type: Number,

@@ -75,8 +75,10 @@ export default {
   },
   methods: {
     getRole() {
-      const roles = this.user.roles.map(value => this.$options.filters.uppercaseFirst(value));
-      return roles.join(' | ');
+      if (this.user.roles) {
+        const roles = this.user.roles.map(value => this.$options.filters.uppercaseFirst(value));
+        return roles.join(' | ');
+      }
     },
     imagecropperShow() {
       this.imagecropper = true;
