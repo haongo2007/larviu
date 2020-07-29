@@ -40,46 +40,41 @@
           <span>{{ scope.row.id }}</span>
         </template>
       </el-table-column>
-      <el-table-column :label="$t('table.date')" width="150px" align="center">
+      <el-table-column :label="$t('table.name')" min-width="150px" width="400px">
         <template slot-scope="scope">
-          <span>{{ scope.row.timestamp | parseTime('{y}-{m}-{d} {h}:{i}') }}</span>
+          <el-tag>{{ scope.row.name }}</el-tag>
         </template>
       </el-table-column>
-      <el-table-column :label="$t('table.title')" min-width="150px">
-        <template slot-scope="{row}">
-          <span class="link-type" @click="handleUpdate(row)">{{ row.title }}</span>
-          <el-tag>{{ row.type | typeFilter }}</el-tag>
-        </template>
-      </el-table-column>
-      <el-table-column :label="$t('table.author')" width="110px" align="center">
+      <el-table-column :label="$t('parent')" align="center">
         <template slot-scope="scope">
-          <span>{{ scope.row.author }}</span>
+          <el-tag type="published">
+            {{ scope.row.name_parent }}
+          </el-tag>
         </template>
       </el-table-column>
-      <el-table-column v-if="showReviewer" :label="$t('table.reviewer')" width="110px" align="center">
+      <el-table-column :label="$t('creator')" width="110px" align="center">
         <template slot-scope="scope">
-          <span style="color:red;">{{ scope.row.reviewer }}</span>
+          <span>{{ scope.row.creator }}</span>
         </template>
       </el-table-column>
-      <el-table-column :label="$t('table.importance')" width="80px">
+      <el-table-column :label="$t('order')" width="110px" align="center">
         <template slot-scope="scope">
-          <svg-icon v-for="n in +scope.row.importance" :key="n" icon-class="star" class="meta-item__icon" />
-        </template>
-      </el-table-column>
-      <el-table-column :label="$t('table.readings')" align="center" width="95">
-        <template slot-scope="{row}">
-          <span v-if="row.pageviews" class="link-type" @click="handleFetchPv(row.pageviews)">{{ row.pageviews }}</span>
-          <span v-else>0</span>
+          <span style="color:red;">{{ scope.row.order }}</span>
         </template>
       </el-table-column>
       <el-table-column :label="$t('table.status')" class-name="status-col" width="100">
         <template slot-scope="{row}">
-          <el-tag :type="row.status | statusFilter">
-            {{ row.status }}
+          <el-tag :type="row.active == 1 ? 'published' : 'deleted' | statusFilter">
+            {{ row.active == 1 ? 'Active' : 'Deactive' }}
           </el-tag>
         </template>
       </el-table-column>
-      <el-table-column :label="$t('table.actions')" align="center" width="230" class-name="small-padding fixed-width">
+      <el-table-column :label="$t('table.date')" width="220px" align="center">
+        <template slot-scope="scope">
+          <span>{{ scope.row.created_at | parseTime('{y}-{m}-{d} {h}:{i}') }}</span>
+        </template>
+      </el-table-column>
+      <el-table-column :label="$t('table.actions')" align="center" width="350" class-name="small-padding fixed-width">
         <template slot-scope="{row}">
           <el-button type="primary" size="mini" @click="handleUpdate(row)">
             {{ $t('table.edit') }}
@@ -147,7 +142,7 @@
 </template>
 
 <script>
-import { fetchList, fetchPv, createArticle, updateArticle } from '@/api/article';
+import { fetchList, fetchPv, createArticle, updateArticle } from '@/api/catalog';
 import waves from '@/directive/waves'; // Waves directive
 import { parseTime } from '@/utils';
 import Pagination from '@/components/Pagination'; // Secondary package based on el-pagination
@@ -173,7 +168,6 @@ export default {
     statusFilter(status) {
       const statusMap = {
         published: 'success',
-        draft: 'info',
         deleted: 'danger',
       };
       return statusMap[status];
@@ -194,7 +188,6 @@ export default {
         importance: undefined,
         title: undefined,
         type: undefined,
-        sort: '+id',
       },
       importanceOptions: [1, 2, 3],
       calendarTypeOptions,
@@ -232,11 +225,11 @@ export default {
   methods: {
     async getList() {
       this.listLoading = true;
-      const { data } = await fetchList(this.listQuery);
-      this.list = data.items;
-      this.total = data.total;
-
+      const data = await fetchList(this.listQuery);
+      this.list = data.data;
+      this.total = data.data.length;
       // Just to simulate the time of the request
+      console.log(data);
       this.listLoading = false;
     },
     handleFilter() {

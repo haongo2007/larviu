@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers\Api;
 
-use App\Http\Resources\UserResource;
+use App\Http\Resources\UserCollection;
 use App\Larviu\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
@@ -26,7 +26,7 @@ class AuthController extends BaseController
             return response()->json(new JsonResponse([], 'login_error'), Response::HTTP_UNAUTHORIZED);
         }
         $user = $request->user();
-        return response()->json(new JsonResponse(new UserResource($user)), Response::HTTP_OK);
+        return response()->json(new JsonResponse(new UserCollection($user)), Response::HTTP_OK);
     }
 
     /**

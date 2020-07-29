@@ -2,8 +2,8 @@
 
 namespace App\Http\Controllers\Api;
 
-use App\Http\Resources\PermissionResource;
-use App\Http\Resources\UserResource;
+use App\Http\Resources\PermissionCollection;
+use App\Http\Resources\UserCollection;
 use App\Larviu\JsonResponse;
 use App\Larviu\Models\Permission;
 use App\Larviu\Models\Role;
@@ -49,7 +49,7 @@ class UserController extends BaseController
             $userQuery->where('email', 'LIKE', '%' . $keyword . '%');
         }
 
-        return UserResource::collection($userQuery->paginate($limit));
+        return UserCollection::collection($userQuery->paginate($limit));
     }
 
     /**
@@ -83,7 +83,7 @@ class UserController extends BaseController
             $role = Role::findByName($params['role']);
             $user->syncRoles($role);
 
-            return new UserResource($user);
+            return new UserCollection($user);
         }
     }
 
@@ -91,11 +91,11 @@ class UserController extends BaseController
      * Display the specified resource.
      *
      * @param  User $user
-     * @return UserResource|\Illuminate\Http\JsonResponse
+     * @return UserCollection|\Illuminate\Http\JsonResponse
      */
     public function show(User $user)
     {
-        return new UserResource($user);
+        return new UserCollection($user);
     }
 
     /**
@@ -103,7 +103,7 @@ class UserController extends BaseController
      *
      * @param Request $request
      * @param User    $user
-     * @return UserResource|\Illuminate\Http\JsonResponse
+     * @return UserCollection|\Illuminate\Http\JsonResponse
      */
     public function update(Request $request, User $user)
     {
@@ -136,7 +136,7 @@ class UserController extends BaseController
             $user->name = $request->get('name');
             $user->email = $email;
             $user->save();
-            return new UserResource($user);
+            return new UserCollection($user);
         }
     }
 
@@ -145,7 +145,7 @@ class UserController extends BaseController
      *
      * @param Request $request
      * @param User    $user
-     * @return UserResource|\Illuminate\Http\JsonResponse
+     * @return UserCollection|\Illuminate\Http\JsonResponse
      */
     public function updatePermissions(Request $request, User $user)
     {
@@ -169,7 +169,7 @@ class UserController extends BaseController
         $newPermissionIds = array_diff($permissionIds, $rolePermissionIds);
         $permissions = Permission::allowed()->whereIn('id', $newPermissionIds)->get();
         $user->syncPermissions($permissions);
-        return new UserResource($user);
+        return new UserCollection($user);
     }
 
     /**
@@ -203,8 +203,8 @@ class UserController extends BaseController
     {
         try {
             return new JsonResponse([
-                'user' => PermissionResource::collection($user->getDirectPermissions()),
-                'role' => PermissionResource::collection($user->getPermissionsViaRoles()),
+                'user' => PermissionCollection::collection($user->getDirectPermissions()),
+                'role' => PermissionCollection::collection($user->getPermissionsViaRoles()),
             ]);
         } catch (\Exception $ex) {
             response()->json(['error' => $ex->getMessage()], 403);

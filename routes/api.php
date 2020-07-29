@@ -1,6 +1,6 @@
 <?php
 
-use App\Http\Resources\UserResource;
+use App\Http\Resources\UserCollection;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use \App\Larviu\Faker;
@@ -26,7 +26,7 @@ Route::namespace('Api')->group(function() {
         Route::post('auth/logout', 'AuthController@logout');
 
         Route::get('/user', function (Request $request) {
-            return new UserResource($request->user());
+            return new UserCollection($request->user());
         });
 
         // Api resource routes
@@ -43,8 +43,26 @@ Route::namespace('Api')->group(function() {
         // update avatar
         Route::post('update/avatar', 'UserController@updateAvatar');
         
+        Route::apiResource('catalog', 'CatalogController');
     });
 });
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 // Fake APIs
 Route::get('/table/list', function () {

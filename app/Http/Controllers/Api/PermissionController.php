@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers\Api;
 
-use App\Http\Resources\PermissionResource;
+use App\Http\Resources\PermissionCollection;
 use Illuminate\Http\Request;
 use App\Larviu\Models\Permission;
 
@@ -20,7 +20,7 @@ class PermissionController extends BaseController
      */
     public function index()
     {
-        return PermissionResource::collection(Permission::all());
+        return PermissionCollection::collection(Permission::all());
     }
 
     /**

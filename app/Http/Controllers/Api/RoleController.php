@@ -2,11 +2,11 @@
 
 namespace App\Http\Controllers\Api;
 
-use App\Http\Resources\PermissionResource;
+use App\Http\Resources\PermissionCollection;
 use App\Larviu\Models\Permission;
 use Illuminate\Http\Request;
 use App\Larviu\Models\Role;
-use App\Http\Resources\RoleResource;
+use App\Http\Resources\RoleCollection;
 
 /**
  * Class RoleController
@@ -22,7 +22,7 @@ class RoleController extends BaseController
      */
     public function index()
     {
-        return RoleResource::collection(Role::all());
+        return RoleCollection::collection(Role::all());
     }
 
     /**
@@ -64,7 +64,7 @@ class RoleController extends BaseController
         $permissions = Permission::allowed()->whereIn('id', $permissionIds)->get();
         $role->syncPermissions($permissions);
         $role->save();
-        return new RoleResource($role);
+        return new RoleCollection($role);
     }
 
     /**
@@ -86,6 +86,6 @@ class RoleController extends BaseController
      */
     public function permissions(Role $role)
     {
-        return PermissionResource::collection($role->permissions);
+        return PermissionCollection::collection($role->permissions);
     }
 }
