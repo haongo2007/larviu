@@ -17,4 +17,8 @@ class Catalog extends Model
     {
     	return $this->belongsTo(User::class, 'creator','id');
     }
+    public function Child()
+    {
+    	return $this->hasOne(self::class,'id','id_parent');
+    }
 }

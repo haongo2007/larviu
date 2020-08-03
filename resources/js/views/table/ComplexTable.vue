@@ -40,15 +40,18 @@
           <span>{{ scope.row.id }}</span>
         </template>
       </el-table-column>
-      <el-table-column :label="$t('table.name')" min-width="150px" width="400px">
+      <el-table-column :label="$t('table.name')" min-width="150px">
         <template slot-scope="scope">
           <el-tag>{{ scope.row.name }}</el-tag>
         </template>
       </el-table-column>
       <el-table-column :label="$t('parent')" align="center">
         <template slot-scope="scope">
-          <el-tag type="published">
-            {{ scope.row.name_parent }}
+          <el-tag v-if="scope.row.name_parent" type="primary">
+            {{ scope.row.name_parent.name }}
+          </el-tag>
+          <el-tag v-else type="danger">
+            {{ 'Is parent' }}
           </el-tag>
         </template>
       </el-table-column>
@@ -227,9 +230,8 @@ export default {
       this.listLoading = true;
       const data = await fetchList(this.listQuery);
       this.list = data.data;
-      this.total = data.data.length;
+      this.total = data.meta.total;
       // Just to simulate the time of the request
-      console.log(data);
       this.listLoading = false;
     },
     handleFilter() {

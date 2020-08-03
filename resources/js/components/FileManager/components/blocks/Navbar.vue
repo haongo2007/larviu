@@ -1,82 +1,92 @@
 <template>
-    <div>
+  <div>
     <el-row :gutter="20" style="margin-top:10px;">
-        <el-col :span="24">
-            <el-menu class="el-menu-demo" mode="horizontal">
-                
-                <el-menu-item index="1" :disabled="backDisabled" v-on:click="historyBack()"><i class="fas fa-step-backward"></i></el-menu-item>
-                <el-menu-item index="2" :disabled="forwardDisabled" v-on:click="refreshAll()"><i class="fas fa-sync-alt"></i></el-menu-item>
-                <el-menu-item index="3" :disabled="forwardDisabled" v-on:click="historyForward()"><i class="fas fa-step-forward"></i></el-menu-item>
+      <el-col :span="24">
+        <el-menu class="el-menu-demo" mode="horizontal">
 
-                <el-submenu index="4">
-                    <template slot="title">Clipboard</template>
-                    <el-menu-item 
-                    index="4-1" 
-                    v-on:click="toClipboard('copy')"
-                    :disabled="!isAnyItemSelected">
-                    <i class="fas fa-paste"></i> {{ lang.btn.copy }}</el-menu-item>
-                    <el-menu-item 
-                    index="4-2" 
-                    v-on:click="toClipboard('cut')"
-                    :disabled="!isAnyItemSelected">
-                    <i class="fas fa-cut"></i> {{ lang.btn.cut }}</el-menu-item>
-                    <el-menu-item 
-                    index="4-3" 
-                    v-on:click="paste"
-                    :disabled="!clipboardType">
-                    <i class="fas fa-copy"></i> {{ lang.btn.paste }}</el-menu-item>
-                </el-submenu>
+          <el-menu-item index="1" :disabled="backDisabled" @click="historyBack()"><i class="fas fa-step-backward" /></el-menu-item>
+          <el-menu-item index="2" :disabled="forwardDisabled" @click="refreshAll()"><i class="fas fa-sync-alt" /></el-menu-item>
+          <el-menu-item index="3" :disabled="forwardDisabled" @click="historyForward()"><i class="fas fa-step-forward" /></el-menu-item>
 
-                <el-submenu index="5">
-                    <template slot="title">Action</template>
-                    <el-menu-item 
-                    index="5-1" 
-                    v-on:click="showModal('NewFile')">
-                    <i class="far fa-file"></i> {{ lang.btn.file }}</el-menu-item>
-                    <el-menu-item 
-                    index="5-2" 
-                    v-on:click="showModal('NewFolder')">
-                    <i class="far fa-folder"></i> {{ lang.btn.folder }}</el-menu-item>
-                    <el-menu-item 
-                    index="5-3" 
-                    v-on:click="paste"
-                    disabled
-                    v-if="uploading">
-                    <i class="fas fa-upload"></i> {{ lang.btn.upload }}</el-menu-item>
-                    <el-menu-item 
-                    index="5-3" 
-                    v-else
-                    v-on:click="showModal('Upload')">
-                    <i class="fas fa-upload"></i> {{ lang.btn.upload }}</el-menu-item>
-                    <el-menu-item 
-                    index="5-4" 
-                    v-on:click="paste"
-                    :disabled="!isAnyItemSelected">
-                    <i class="fas fa-trash-alt"></i> {{ lang.btn.delete }}</el-menu-item>
-                    <el-menu-item 
-                    index="5-5" 
-                    v-on:click="toggleHidden">
-                    <i class="fas" v-bind:class="[hiddenFiles ? 'fa-eye': 'fa-eye-slash']"></i> {{ lang.btn.hidden }}</el-menu-item>
-                </el-submenu>
+          <el-submenu index="4">
+            <template slot="title">Clipboard</template>
+            <el-menu-item
+              index="4-1"
+              :disabled="!isAnyItemSelected"
+              @click="toClipboard('copy')"
+            >
+              <i class="fas fa-copy" /> {{ lang.btn.copy }}</el-menu-item>
+            <el-menu-item
+              index="4-2"
+              :disabled="!isAnyItemSelected"
+              @click="toClipboard('cut')"
+            >
+              <i class="fas fa-cut" /> {{ lang.btn.cut }}</el-menu-item>
+            <el-menu-item
+              index="4-3"
+              :disabled="!clipboardType"
+              @click="paste"
+            >
+              <i class="fas fa-paste" /> {{ lang.btn.paste }}</el-menu-item>
+          </el-submenu>
 
-                <el-submenu index="6">
-                    <template slot="title">View mode</template>
-                    <el-menu-item 
-                    index="6-1" 
-                    v-on:click="selectView('table')"
-                    :disabled="viewType == 'table' ">
-                    <i class="fas fa-th-list"></i> List</el-menu-item>
-                    <el-menu-item 
-                    index="6-2" 
-                    v-on:click="selectView('grid')"
-                    :disabled="viewType == 'grid'">
-                    <i class="fas fa-th"></i> Grid</el-menu-item>
-                </el-submenu>
-                <el-menu-item index="7" v-on:click="screenToggle">Full Screen</el-menu-item>
-            </el-menu>
-        </el-col>
+          <el-submenu index="5">
+            <template slot="title">Action</template>
+            <el-menu-item
+              index="5-1"
+              @click="showModal('NewFile')"
+            >
+              <i class="far fa-file" /> {{ lang.btn.file }}</el-menu-item>
+            <el-menu-item
+              index="5-2"
+              @click="showModal('NewFolder')"
+            >
+              <i class="far fa-folder" /> {{ lang.btn.folder }}</el-menu-item>
+            <el-menu-item
+              v-if="uploading"
+              index="5-3"
+              disabled
+            >
+              <i class="fas fa-upload" /> {{ lang.btn.upload }}</el-menu-item>
+            <el-menu-item
+              v-else
+              index="5-3"
+              @click="showModal('Upload')"
+            >
+              <i class="fas fa-upload" /> {{ lang.btn.upload }}</el-menu-item>
+            <el-menu-item
+              index="5-4"
+              :disabled="!isAnyItemSelected"
+              @click="showModal('Delete')"
+            >
+              <i class="fas fa-trash-alt" /> {{ lang.btn.delete }}</el-menu-item>
+            <el-menu-item
+              index="5-5"
+              @click="toggleHidden"
+            >
+              <i class="fas" :class="[hiddenFiles ? 'fa-eye': 'fa-eye-slash']" /> {{ lang.btn.hidden }}</el-menu-item>
+          </el-submenu>
+
+          <el-submenu index="6">
+            <template slot="title">View mode</template>
+            <el-menu-item
+              index="6-1"
+              :disabled="viewType == 'table' "
+              @click="selectView('table')"
+            >
+              <i class="fas fa-th-list" /> List</el-menu-item>
+            <el-menu-item
+              index="6-2"
+              :disabled="viewType == 'grid'"
+              @click="selectView('grid')"
+            >
+              <i class="fas fa-th" /> Grid</el-menu-item>
+          </el-submenu>
+          <el-menu-item index="7" @click="screenToggle">Full Screen</el-menu-item>
+        </el-menu>
+      </el-col>
     </el-row>
-    </div>
+  </div>
 </template>
 
 <script>
@@ -234,7 +244,9 @@ export default {
      * @param type
      */
     selectView(type) {
-      if (this.viewType !== type) this.$store.commit(`fm/${this.activeManager}/setView`, type);
+      if (this.viewType !== type) {
+        this.$store.commit(`fm/${this.activeManager}/setView`, type);
+      }
     },
 
     /**

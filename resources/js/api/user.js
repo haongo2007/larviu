@@ -12,7 +12,6 @@ class UserResource extends Resource {
       method: 'get',
     });
   }
-
   updatePermission(id, permissions) {
     return request({
       url: '/' + this.uri + '/' + id + '/permissions',

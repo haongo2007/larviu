@@ -25,7 +25,7 @@ return [
      * List of disk names that you want to use
      * (from config/filesystems)
      */
-    'diskList' => ['local'],
+    'diskList' => [env('FILESYSTEM_DRIVER', 'local')],
 
     /**
      * Default disk for left manager

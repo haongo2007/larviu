@@ -14,6 +14,7 @@ use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Storage;
+use Intervention\Image\Facades\Image;
 use Illuminate\Support\Str;
 use Validator;
 
@@ -233,14 +234,28 @@ class UserController extends BaseController
     public function updateAvatar(Request $request)
     {
         $user = Auth::user();        
-        $path = '/avatar/'.$user->id;
+        $path = 'user/avatar/'.$user->id;
         $fileName = $request->file('avatar')->hashName();
         $request->file('avatar')->storeAs(
-            'public'.$path,$fileName
+            $path,$fileName
         );
-        $avatar = asset('storage'.$path.'/'.$fileName);
-        $user->avatar = $avatar;
+        $url = 'api/getFile?disk=s3&path='.urlencode($path.'/'.$fileName);
+        $user->avatar = $url;
         $user->save();
-        return response()->json(['data' => ['status' => 'success','avatar' => $avatar] ], 200);
+        return response()->json(['data' => ['status' => 'success','avatar' => $url] ], 200);
+    }
+    /**
+     * @param bool $path
+     * @return a file
+     */
+    public function getFileFromS3(Request $request)
+    {
+        $image = Image::make(Storage::disk($request->input('disk'))->get(urldecode($request->input('path'))));
+        if ($request->input('w') && $request->input('h')) {
+            $w = $request->input('w');
+            $h = $request->input('h');
+            $image->resize($w, $h);
+        }
+        return $image->response();
     }
 }

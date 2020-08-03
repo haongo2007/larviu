@@ -21,15 +21,15 @@ class CatalogController extends Controller
     public function index(Request $request)
     {
         $searchParams = $request->all();
-        $catalogQuery = Catalog::with('Creator:name,id');
+        $catalogQuery = Catalog::with('Creator:name,id','Child:id,id_parent,name');
         $limit = Arr::get($searchParams, 'limit', static::ITEM_PER_PAGE);
         $role = Arr::get($searchParams, 'role', '');
         $keyword = Arr::get($searchParams, 'keyword', '');
         if (!empty($keyword)) {
             $catalogQuery->where('name', 'LIKE', '%' . $keyword . '%');
         }
-
-        return CatalogCollection::collection($this->data_tree($catalogQuery->get()));
+        $list = $catalogQuery->paginate($limit);
+        return CatalogCollection::collection($list);
     }
     /**
      * A helper to Recursive catalog.

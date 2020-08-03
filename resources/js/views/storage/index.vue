@@ -1,6 +1,6 @@
 <template>
   <div class="app-container">
-      <FileManager></FileManager>
+    <FileManager />
   </div>
 </template>
 
@@ -9,10 +9,10 @@ import FileManager from '@/components/FileManager';
 import { toggleClass } from '@/utils';
 import '@/assets/custom-theme/index.css'; // the theme changed version element-ui css
 import './assets/all.css';
-//import './assets/bootstrap.css';
+// import './assets/bootstrap.css';
 
 export default {
-  name: 'storage',
+  name: 'Storage',
   components: { FileManager },
   data() {
     return {
@@ -34,7 +34,7 @@ export default {
     },
   },
   created() {
-    console.log(this.$store.state);
+    // console.log(this.$store.state);
   },
 };
 </script>

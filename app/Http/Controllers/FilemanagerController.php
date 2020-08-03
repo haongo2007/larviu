@@ -16,7 +16,7 @@ class FilemanagerController implements ConfigRepository
      * @return array
      */
     public function getDiskList():array{
-        return ['public'];
+        return ['larviu'];
     }
 
 }

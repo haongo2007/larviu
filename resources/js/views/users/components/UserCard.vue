@@ -3,7 +3,7 @@
     <div class="user-profile">
       <div class="user-avatar box-center">
         <el-button type="text" @click="imagecropperShow">
-          <pan-thumb :image="user.avatar" :height="'100px'" :width="'100px'" :hoverable="false" :camera="true" />
+          <pan-thumb :image="user.avatar+'&w=100&h=100'" :height="'100px'" :width="'100px'" :hoverable="false" :camera="true" />
         </el-button>
         <Cropper :cropper="imagecropper" @dadUpdatedCropper="imagecropper = $event" />
       </div>

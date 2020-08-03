@@ -18,12 +18,10 @@ class CatalogCollection extends JsonResource
             'id' => $this->id,
             'name' => $this->name,
             'active' => $this->is_active,
-            'parent' => $this->id_parent,
             'order' => $this->order,
             'created_at' => $this->order,
             'creator' => $this->Creator->name,
-            'name_parent' => $this->name_parent,
-            'level' => $this->level,
+            'name_parent' => $this->Child,
         ];
     }
 }

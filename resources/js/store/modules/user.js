@@ -70,7 +70,6 @@ const actions = {
           if (!roles || roles.length <= 0) {
             reject('getInfo: roles must be a non-null array!');
           }
-
           commit('SET_ROLES', roles);
           commit('SET_PERMISSIONS', permissions);
           commit('SET_NAME', name);
@@ -129,9 +128,9 @@ const actions = {
       resetRouter();
 
       // generate accessible routes map based on roles
-      const accessRoutes = dispatch('permission/generateRoutes', { roles, permissions },{ root: true});
+      const accessRoutes = dispatch('permission/generateRoutes', { roles, permissions }, { root: true });
       // dynamically add accessible routes
-      
+
       accessRoutes.then((accessRoutes) => {
         router.addRoutes(accessRoutes);
         resolve();
@@ -139,8 +138,8 @@ const actions = {
     });
   },
   // update avatar
-  setAvatar({ commit },avatar) {
-      commit('SET_AVATAR', avatar);
+  setAvatar({ commit }, avatar) {
+    commit('SET_AVATAR', avatar);
   },
 };
 

@@ -6,7 +6,6 @@ use Illuminate\Support\Facades\Route;
 use \App\Larviu\Faker;
 use \App\Larviu\JsonResponse;
 use \App\Larviu\Acl;
-
 /*
 |--------------------------------------------------------------------------
 | API Routes
@@ -39,29 +38,15 @@ Route::namespace('Api')->group(function() {
         Route::get('users/{user}/permissions', 'UserController@permissions')->middleware('permission:' . Acl::PERMISSION_PERMISSION_MANAGE);
         Route::put('users/{user}/permissions', 'UserController@updatePermissions')->middleware('permission:' .Acl::PERMISSION_PERMISSION_MANAGE);
         Route::get('roles/{role}/permissions', 'RoleController@permissions')->middleware('permission:' . Acl::PERMISSION_PERMISSION_MANAGE);
-
+        
         // update avatar
         Route::post('update/avatar', 'UserController@updateAvatar');
-        
+
         Route::apiResource('catalog', 'CatalogController');
     });
+
+    Route::get('getFile', 'UserController@getFileFromS3');
 });
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 // Fake APIs
