@@ -71,7 +71,7 @@ export default {
         path: this.selectedItems[0].path,
       }).then((response) => {
         if (response.data.result.status === 'success') {
-          this.$store.state.fm.fileCallback(response.data.url);
+          this.$store.state.fm.fileCallback(response.data.result.data);
         }
       });
     },

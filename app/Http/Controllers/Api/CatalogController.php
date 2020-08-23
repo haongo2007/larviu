@@ -7,11 +7,32 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Arr;
 use App\Larviu\Models\Catalog;
 use App\Http\Resources\CatalogCollection;
+use Illuminate\Http\Resources\Json\ResourceCollection;
 use App\Larviu\JsonResponse;
+use Validator;
+use Illuminate\Support\Str;
+use Illuminate\Support\Facades\Auth;
+use App\Larviu\Models\StorageFile;
+use Illuminate\Support\Facades\Storage;
 
 class CatalogController extends Controller
 {
 	const ITEM_PER_PAGE = 15;
+    const ORDER = 'DESC';
+
+    public $catalogTmp = [];
+
+    /**
+     * @param bool $isNew
+     * @return array
+     */
+    private function getValidationRules($isNew = true)
+    {
+        return [
+            'name' => 'required',
+        ];
+    }
+
 	/**
      * Display a listing of the user resource.
      *
@@ -21,34 +42,132 @@ class CatalogController extends Controller
     public function index(Request $request)
     {
         $searchParams = $request->all();
-        $catalogQuery = Catalog::with('Creator:name,id','Child:id,id_parent,name');
+        $catalogQuery = Catalog::with('Creator:name,id','Parent:name,id','Banner:url,id,extension');
         $limit = Arr::get($searchParams, 'limit', static::ITEM_PER_PAGE);
-        $role = Arr::get($searchParams, 'role', '');
-        $keyword = Arr::get($searchParams, 'keyword', '');
-        if (!empty($keyword)) {
-            $catalogQuery->where('name', 'LIKE', '%' . $keyword . '%');
+        $sort = Arr::get($searchParams, 'sort', static::ORDER);
+        $name = Arr::get($searchParams, 'name', '');
+        if (!empty($name)) {
+            $catalogQuery->where('name', 'LIKE', '%' . $name . '%');
+        }
+        if (!empty($sort)) {
+            $catalogQuery->orderBy('id', $sort);
         }
         $list = $catalogQuery->paginate($limit);
         return CatalogCollection::collection($list);
     }
     /**
-     * A helper to Recursive catalog.
+     * Display the specified resource.
      *
-     * @param  $data
-     * @return array
+     * @param  Catalog
+     * @return \Illuminate\Http\Response
      */
-    public static function data_tree($data,$parent=0,$level=0,$name_parent='Is parent'){
-        $result = [];
-        foreach ($data as $key => $value) {
-            if ($value['id_parent'] == $parent ) {
-                $value['level'] = $level;
-                $value['name_parent'] = $name_parent;
-                $result[] = $value;
-                $child = self::data_tree($data,$value['id'],$level + 1,$value['name']);
-                unset($data[$value['id']]);
-                $result = array_merge($result,$child);
+    public function show(Catalog $catalog)
+    {
+        return new CatalogCollection($catalog);
+    }
+    /**
+     * Store a newly created resource in storage.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\Response
+     */
+    public function store(Request $request)
+    {
+        $validator = Validator::make(
+            $request->all(),
+            array_merge(
+                $this->getValidationRules(),
+                [
+                    'name' => ['required', 'min:3'],
+                ]
+            )
+        );
+
+        if ($validator->fails()) {
+            return response()->json(['errors' => $validator->errors()], 403);
+        } else {
+            $params = $request->all();
+            $slug = Str::slug($params['name'], '-');
+            if (is_array($params['catalog'])) {
+                $params['catalog'] = last($params['catalog']);
+            }
+            $catalog = Catalog::create([
+                'name' => $params['name'],
+                'slug' => $slug,
+                'order' => $params['order'],
+                'is_active' => $params['status'],
+                'id_parent' => $params['catalog'],
+                'creator' => Auth::user()->id,
+            ]);
+            /* UPLOAD BANNER */
+            if ($image = $params['banner']) {
+                $filename  = $image->hashName();
+                $path = 'catalog/'.$slug;
+                $image->storeAs($path, $filename);
+                $url = 'api/getFile?disk='.env('FILESYSTEM_DRIVER', 'local').'&path='.urlencode($path.'/'.$filename);
+                StorageFile::create([
+                    'name' => $filename,
+                    'url' => $url,
+                    'type' => 'catalog',
+                    'extension' => $catalog->id
+                ]);
+            }
+            $catalog = $catalog->load('Creator:name,id','Parent:name,id',"Banner:url,id,extension")->toArray();
+            $catalog['creator'] = $catalog['creator']['name'];
+            return $catalog;
+        }
+    }
+    /**
+     * Remove the specified resource from storage.
+     *
+     * @param  Catalog $catalog
+     * @return \Illuminate\Http\Response
+     */
+    public function destroy(Catalog $catalog)
+    {
+        if ($catalog->Children()->count() > 0) {
+            return response()->json(['error' => 'This record is currently linked to another that cannot be deleted'], 403);
+        }else{
+            try {
+                $catalog->Banner()->delete();
+                $catalog->delete();
+            } catch (\Exception $ex) {
+                response()->json(['error' => $ex->getMessage()], 403);
             }
         }
-        return $result;
+        return response()->json(null, 204);
+    }
+    /**
+     * Get Recursive catalog.
+     *
+     * @param  null
+     * @return \Illuminate\Http\Response
+     */
+    public function Recursive( $id_parent = 0){
+        $data = [];
+        foreach ($this->getCatalog($id_parent) as $group)
+        {
+            $group['children'] = $this->Recursive($group['id']);
+            if (empty($group['children'])) {
+                unset($group['children']);
+            }
+            $data[] = $group;
+        }
+        return $data;
+    }
+    public function getCatalog($id_parent)
+    {
+        $tmp = [];
+        $catalog = $this->catalogTmp;
+        if (empty($catalog)) {
+            $catalog = Catalog::select('name','id','id_parent')->get();
+            $this->catalogTmp = $catalog;
+        }
+        foreach ($catalog as $key => $value) {
+            if ($value['id_parent'] == $id_parent) {
+                $tmp[] = $value->toArray();
+            }
+        }
+        return $tmp;
     }
 }

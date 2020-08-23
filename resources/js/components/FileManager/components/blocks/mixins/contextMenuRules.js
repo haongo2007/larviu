@@ -54,8 +54,7 @@ export default {
      * @returns {boolean|null}
      */
     selectRule() {
-      return !this.multiSelect && this.firstItemType === 'file' &&
-          this.$store.state.fm.fileCallback;
+      return this.firstItemType === 'file' && this.$store.state.fm.fileCallback;
     },
 
     /**

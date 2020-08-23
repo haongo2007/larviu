@@ -239,7 +239,7 @@ class UserController extends BaseController
         $request->file('avatar')->storeAs(
             $path,$fileName
         );
-        $url = 'api/getFile?disk=s3&path='.urlencode($path.'/'.$fileName);
+        $url = 'api/getFile?disk='.env('FILESYSTEM_DRIVER', 'local').'&path='.urlencode($path.'/'.$fileName);
         $user->avatar = $url;
         $user->save();
         return response()->json(['data' => ['status' => 'success','avatar' => $url] ], 200);
@@ -251,10 +251,14 @@ class UserController extends BaseController
     public function getFileFromS3(Request $request)
     {
         $image = Image::make(Storage::disk($request->input('disk'))->get(urldecode($request->input('path'))));
-        if ($request->input('w') && $request->input('h')) {
-            $w = $request->input('w');
-            $h = $request->input('h');
-            $image->resize($w, $h);
+        if ($request->input('w') || $request->input('h')) {
+            $w = $request->input('w') ? $request->input('w') : null;
+            $h = $request->input('h') ? $request->input('h') : null;
+            $image->resize($w, $h,function ($constraint) use ($w,$h){
+                if (!$w || !$h) {
+                    $constraint->aspectRatio();
+                }
+            });
         }
         return $image->response();
     }

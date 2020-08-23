@@ -8,7 +8,6 @@
 import FileManager from '@/components/FileManager';
 import { toggleClass } from '@/utils';
 import '@/assets/custom-theme/index.css'; // the theme changed version element-ui css
-import './assets/all.css';
 // import './assets/bootstrap.css';
 
 export default {

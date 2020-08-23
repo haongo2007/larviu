@@ -13,10 +13,11 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
+	
 Route::get('/', function () {
     return view('welcome');
 });
-
 Route::group(['middleware' => 'web'], function () {
+	Route::get('file-manager/url','LarviuController@url');
     Route::get(env('LARVIU_PATH'), 'LarviuController@index')->where('any', '.*')->name('larviu');
 });

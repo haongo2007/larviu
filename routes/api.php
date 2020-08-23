@@ -43,6 +43,8 @@ Route::namespace('Api')->group(function() {
         Route::post('update/avatar', 'UserController@updateAvatar');
 
         Route::apiResource('catalog', 'CatalogController');
+        Route::post('catalog/getRecursive', 'CatalogController@Recursive');
+
     });
 
     Route::get('getFile', 'UserController@getFileFromS3');

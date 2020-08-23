@@ -112,7 +112,9 @@ export default {
       }
 
       // single select
-      if (!event.ctrlKey && !alreadySelected) this.$store.commit(`fm/${this.manager}/changeSelected`, { type, path });
+      if (!event.ctrlKey && !alreadySelected) {
+        this.$store.commit(`fm/${this.manager}/changeSelected`, { type, path });
+      }
     },
 
     /**
@@ -125,7 +127,6 @@ export default {
       const type = item.type === 'dir' ? 'directories' : 'files';
       // search in selected array
       const alreadySelected = this.selected[type].includes(item.path);
-
       // select this element
       if (!alreadySelected) {
         // select item
@@ -134,7 +135,6 @@ export default {
           path: item.path,
         });
       }
-
       // create event
       EventBus.$emit('contextMenu', event);
     },

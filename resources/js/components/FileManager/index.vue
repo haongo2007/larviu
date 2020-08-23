@@ -1,26 +1,28 @@
 <template>
-    <div class="fm" v-bind:class="{ 'fm-full-screen': fullScreen }">
-      <el-row :gutter="20">
-        <el-col :xs="24" :sm="8" :md="6" :lg="4" style="margin-bottom: 20px;">
-          <folder-tree></folder-tree>
-        </el-col>
-        <el-col :xs="24" :sm="16" :md="18" :lg="20">
-          <template>
-            <left-manager manager="left"
-                          v-on:click.native="selectManager('left')"
-                          v-on:contextmenu.native="selectManager('left')">
-            </left-manager>
-          </template>
-        </el-col>
-      </el-row>
-      
-      <notification></notification>
-      <context-menu></context-menu>
-      <modal v-if="showModal"></modal>
-    </div>
+  <div class="fm" :class="{ 'fm-full-screen': fullScreen }">
+    <el-row :gutter="20">
+      <el-col :xs="24" :sm="8" :md="6" :lg="4" style="margin-bottom: 20px;">
+        <folder-tree />
+      </el-col>
+      <el-col :xs="24" :sm="16" :md="18" :lg="20">
+        <template>
+          <left-manager
+            manager="left"
+            @click.native="selectManager('left')"
+            @contextmenu.native="selectManager('left')"
+          />
+        </template>
+      </el-col>
+    </el-row>
+
+    <notification />
+    <context-menu />
+    <modal v-if="showModal" />
+  </div>
 </template>
 
 <script>
+import '../../views/storage/assets/all.css';
 /* eslint-disable import/no-duplicates, no-param-reassign */
 import { mapState } from 'vuex';
 // Axios
@@ -29,7 +31,7 @@ import EventBus from './eventBus';
 // Components
 import FolderTree from './components/tree/FolderTree.vue';
 import LeftManager from './components/manager/Manager.vue';
-import RightManager from './components/manager/Manager.vue';
+// import RightManager from './components/manager/Manager.vue';
 import Modal from './components/modals/Modal.vue';
 import ContextMenu from './components/blocks/ContextMenu.vue';
 import Notification from './components/blocks/Notification.vue';
@@ -38,25 +40,36 @@ import translate from './mixins/translate';
 
 export default {
   name: 'FileManager',
-  mixins: [translate],
   components: {
     FolderTree,
     LeftManager,
-    RightManager,
     Modal,
     ContextMenu,
     Notification,
   },
+  mixins: [translate],
   props: {
     /**
      * LFM manual settings
      */
+    getFile: {
+      type: Boolean,
+      default: false,
+    },
     settings: {
       type: Object,
       default() {
         return {};
       },
     },
+  },
+  computed: {
+    ...mapState('fm', {
+      windowsConfig: state => state.settings.windowsConfig,
+      activeManager: state => state.settings.activeManager,
+      showModal: state => state.modal.showModal,
+      fullScreen: state => state.settings.fullScreen,
+    }),
   },
   created() {
     // manual settings
@@ -81,6 +94,11 @@ export default {
       EventBus.$emit('keyMonitor', event);
     });
     */
+    if (this.getFile) {
+      this.$store.state.fm.fileCallback = (res) => {
+        EventBus.$emit('getFileResponse', res);
+      };
+    }
   },
   destroyed() {
     // reset state
@@ -88,14 +106,6 @@ export default {
 
     // delete events
     EventBus.$off(['contextMenu', 'addNotification']);
-  },
-  computed: {
-    ...mapState('fm', {
-      windowsConfig: state => state.settings.windowsConfig,
-      activeManager: state => state.settings.activeManager,
-      showModal: state => state.modal.showModal,
-      fullScreen: state => state.settings.fullScreen,
-    }),
   },
   methods: {
     /**

@@ -1,22 +1,28 @@
 <template>
-    <div ref="contextMenu"
-         v-if="menuVisible"
-         v-bind:style="menuStyle"
-         v-on:blur="closeMenu"
-         class="fm-context-menu"
-         tabindex="-1">
-        <ul v-for="(group, index) in menu"
-            v-bind:key="`g-${index}`"
-            class="list-unstyled">
-            <li v-for="(item, index) in group"
-                v-bind:key="`i-${index}`"
-                v-if="showMenuItem(item.name)"
-                v-on:click="menuAction(item.name)">
-                <i class="fa-fw" v-bind:class="item.icon"></i>
-                {{ lang.contextMenu[item.name] }}
-            </li>
-        </ul>
-    </div>
+  <div
+    v-if="menuVisible"
+    ref="contextMenu"
+    :style="menuStyle"
+    class="fm-context-menu"
+    tabindex="-1"
+    @blur="closeMenu"
+  >
+    <ul
+      v-for="(group, i) in menu"
+      :key="`g-${i}`"
+      class="list-unstyled"
+    >
+      <li
+        v-for="(item, j) in group"
+        v-if="showMenuItem(item.name)"
+        :key="`i-${j}`"
+        @click="menuAction(item.name)"
+      >
+        <i class="fa-fw" :class="item.icon" />
+        {{ lang.contextMenu[item.name] }}
+      </li>
+    </ul>
+  </div>
 </template>
 
 <script>
@@ -39,13 +45,6 @@ export default {
       },
     };
   },
-  mounted() {
-    /**
-     * Listen events
-     * 'contextMenu'
-     */
-    EventBus.$on('contextMenu', event => this.showMenu(event));
-  },
   computed: {
     /**
      * Context menu items
@@ -54,6 +53,13 @@ export default {
     menu() {
       return this.$store.state.fm.settings.contextMenu;
     },
+  },
+  mounted() {
+    /**
+     * Listen events
+     * 'contextMenu'
+     */
+    EventBus.$on('contextMenu', event => this.showMenu(event));
   },
   methods: {
     /**
@@ -97,8 +103,12 @@ export default {
       const maxY = elY + (el.offsetHeight - this.$refs.contextMenu.offsetHeight - 25);
       const maxX = elX + (el.offsetWidth - this.$refs.contextMenu.offsetWidth - 25);
 
-      if (top > maxY) menuY = maxY - elY;
-      if (left > maxX) menuX = maxX - elX;
+      if (top > maxY) {
+        menuY = maxY - elY;
+      }
+      if (left > maxX) {
+        menuX = maxX - elX;
+      }
 
       // set coordinates
       this.menuStyle.top = `${menuY}px`;
@@ -121,7 +131,6 @@ export default {
       if (Object.prototype.hasOwnProperty.call(this, `${name}Rule`)) {
         return this[`${name}Rule`]();
       }
-
       return false;
     },
 

@@ -1,6 +1,6 @@
 import request from '@/utils/request';
 
-export function fetchList(query) {
+export function ListCatalog(query) {
   return request({
     url: '/catalog',
     method: 'get',
@@ -8,25 +8,18 @@ export function fetchList(query) {
   });
 }
 
-export function fetchArticle(id) {
+export function deletedCatalog(id) {
   return request({
     url: '/catalog/' + id,
-    method: 'get',
+    method: 'delete',
   });
 }
 
-export function fetchPv(id) {
+export function storeCatalog(data) {
   return request({
-    url: '/catalog/' + id + '/pageviews',
-    method: 'get',
-  });
-}
-
-export function createArticle(data) {
-  return request({
-    url: '/catalog/create',
+    url: '/catalog',
     method: 'post',
-    data,
+    data: data,
   });
 }
 
@@ -35,5 +28,12 @@ export function updateArticle(data) {
     url: '/catalog/update',
     method: 'post',
     data,
+  });
+}
+
+export function getRecursive() {
+  return request({
+    url: '/catalog/getRecursive',
+    method: 'post',
   });
 }
