@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreateStorageFileTable extends Migration
+class CreateAttribute extends Migration
 {
     /**
      * Run the migrations.
@@ -13,12 +13,11 @@ class CreateStorageFileTable extends Migration
      */
     public function up()
     {
-        Schema::create('storage_file', function (Blueprint $table) {
+        Schema::create('attribute', function (Blueprint $table) {
             $table->id();
-            $table->text('name');
-            $table->text('url');
-            $table->string('type')->nullable();
-            $table->string('extension')->nullable();
+            $table->string('name');
+            $table->integer('order');
+            $table->tinyInteger('is_active')->default(0);
             $table->timestamps();
         });
     }
@@ -30,6 +29,6 @@ class CreateStorageFileTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('storage_file');
+        Schema::dropIfExists('attribute');
     }
 }

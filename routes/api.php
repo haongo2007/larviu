@@ -1,7 +1,5 @@
 <?php
 
-use App\Http\Resources\UserCollection;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use \App\Larviu\Faker;
 use \App\Larviu\JsonResponse;
@@ -24,26 +22,22 @@ Route::namespace('Api')->group(function() {
         Route::get('auth/user', 'AuthController@user');
         Route::post('auth/logout', 'AuthController@logout');
 
-        Route::get('/user', function (Request $request) {
-            return new UserCollection($request->user());
-        });
 
         // Api resource routes
         Route::apiResource('roles', 'RoleController')->middleware('permission:' . Acl::PERMISSION_PERMISSION_MANAGE);
         Route::apiResource('users', 'UserController')->middleware('permission:' . Acl::PERMISSION_USER_MANAGE);
         Route::apiResource('permissions', 'PermissionController')->middleware('permission:' . Acl::PERMISSION_PERMISSION_MANAGE);
+        Route::apiResource('category', 'CategoryController');
+        Route::apiResource('brand', 'BrandController');
 
         // Custom routes
+        Route::post('update/avatar', 'UserController@updateAvatar');
+        Route::get('user','UserController@show');
         Route::put('users/{user}', 'UserController@update');
         Route::get('users/{user}/permissions', 'UserController@permissions')->middleware('permission:' . Acl::PERMISSION_PERMISSION_MANAGE);
         Route::put('users/{user}/permissions', 'UserController@updatePermissions')->middleware('permission:' .Acl::PERMISSION_PERMISSION_MANAGE);
         Route::get('roles/{role}/permissions', 'RoleController@permissions')->middleware('permission:' . Acl::PERMISSION_PERMISSION_MANAGE);
-        
-        // update avatar
-        Route::post('update/avatar', 'UserController@updateAvatar');
-
-        Route::apiResource('catalog', 'CatalogController');
-        Route::post('catalog/getRecursive', 'CatalogController@Recursive');
+        Route::post('category/getRecursive', 'CategoryController@Recursive');
 
     });
 

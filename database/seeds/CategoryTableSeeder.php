@@ -1,10 +1,10 @@
 <?php
 
 use Illuminate\Database\Seeder;
-use App\Larviu\Models\Catalog;
+use App\Larviu\Models\Category;
 use Illuminate\Support\Str;
 
-class CatalogTableSeeder extends Seeder
+class CategoryTableSeeder extends Seeder
 {
     /**
      * Run the database seeds.
@@ -13,11 +13,11 @@ class CatalogTableSeeder extends Seeder
      */
     public function run()
     {
-        factory(Catalog::class, 10)->create()->each(
+        factory(Category::class, 10)->create()->each(
 		    function ($parent) {
 		    	$order = ($parent->order + 10);
 		        for ($i = 0; $i < 2; $i++) {
-		            factory(Catalog::class)->create([
+		            factory(Category::class)->create([
 		                'name' => 'child '.$parent->name,
 				        'slug' => Str::slug('child '.$parent->name, '-'),
 				        'is_active' => 1,

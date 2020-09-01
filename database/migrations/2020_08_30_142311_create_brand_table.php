@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreateCatalogTable extends Migration
+class CreateBrandTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,15 +13,16 @@ class CreateCatalogTable extends Migration
      */
     public function up()
     {
-        Schema::create('catalog', function (Blueprint $table) {
+        Schema::create('brand', function (Blueprint $table) {
             $table->id();
             $table->string('name');
             $table->string('slug')->default(null);
             $table->tinyInteger('is_active')->default(0);
             $table->integer('order');
-            $table->integer('id_parent');
-            $table->string('creator');
             $table->timestamps();
+            $table->integer('creator_id');
+            $table->integer('id_banner');
+
         });
     }
 
@@ -32,6 +33,6 @@ class CreateCatalogTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('catalog');
+        Schema::dropIfExists('brand');
     }
 }

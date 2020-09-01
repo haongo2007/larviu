@@ -2,13 +2,13 @@
   <div class="app-container">
     <div class="filter-container">
       <el-input v-model="listQuery.name" :placeholder="$t('table.name')" style="width: 200px;" class="filter-item" @keyup.enter.native="handleFilter" />
-      <el-select v-model="listQuery.importance" :placeholder="$t('table.importance')" clearable style="width: 90px" class="filter-item">
-        <el-option v-for="item in importanceOptions" :key="item" :label="item" :value="item" />
+      <el-select v-model="listQuery.is_active" :placeholder="$t('table.status')" style="width: 90px" class="filter-item" clearable @change="handleFilter('filter',listQuery.is_active)">
+        <el-option v-for="item in fillterStatusOptions" :key="item.key" :label="item.label" :value="item.key" :disabled="item.active" />
       </el-select>
-      <el-select v-model="listQuery.type" :placeholder="$t('table.type')" clearable class="filter-item" style="width: 130px">
-        <el-option v-for="item in calendarTypeOptions" :key="item.key" :label="item.display_name+'('+item.key+')'" :value="item.key" />
+      <el-select v-model="listQuery.by" :placeholder="$t('Sort by')" clearable class="filter-item" style="width: 130px">
+        <el-option v-for="item in sortByOptions" :key="item.key" :value="item.key" :label="item.label" />
       </el-select>
-      <el-select v-model="listQuery.sort" style="width: 140px" class="filter-item" @change="handleFilter(listQuery.sort)">
+      <el-select v-model="listQuery.sort" style="width: 140px" class="filter-item" @change="handleFilter('sort',listQuery.sort)">
         <el-option v-for="item in sortOptions" :key="item.key" :label="item.label" :value="item.key" :disabled="item.active" />
       </el-select>
       <el-button v-waves class="filter-item" type="primary" icon="el-icon-search" @click="handleFilter">
@@ -168,23 +168,23 @@ import Pagination from '@/components/Pagination'; // Secondary package based on 
 import FileManager from '@/components/FileManager';
 import EventBus from '@/components/FileManager/eventBus';
 
-const calendarTypeOptions = [
-  { key: 'CN', display_name: 'China' },
-  { key: 'US', display_name: 'USA' },
-  { key: 'JA', display_name: 'Japan' },
-  { key: 'VI', display_name: 'Vietnam' },
-];
+// const calendarTypeOptions = [
+//   { key: 'CN', display_name: 'China' },
+//   { key: 'US', display_name: 'USA' },
+//   { key: 'JA', display_name: 'Japan' },
+//   { key: 'VI', display_name: 'Vietnam' },
+// ];
 
 // arr to obj ,such as { CN : "China", US : "USA" }
-const calendarTypeKeyValue = calendarTypeOptions.reduce((acc, cur) => {
-  acc[cur.key] = cur.display_name;
-  return acc;
-}, {});
+// const calendarTypeKeyValue = calendarTypeOptions.reduce((acc, cur) => {
+//   acc[cur.key] = cur.display_name;
+//   return acc;
+// }, {});
 
 const categoryResource = new CategoryResource();
 
 export default {
-  name: 'ComplexTable',
+  name: 'Category',
   components: { Pagination, FileManager },
   directives: { waves },
   filters: {
@@ -195,9 +195,9 @@ export default {
       };
       return statusMap[status];
     },
-    typeFilter(type) {
-      return calendarTypeKeyValue[type];
-    },
+    // typeFilter(type) {
+    //   return calendarTypeKeyValue[type];
+    // },
   },
   data() {
     return {
@@ -221,13 +221,55 @@ export default {
       listQuery: {
         page: 1,
         limit: 20,
-        importance: undefined,
+        is_active: undefined,
         name: undefined,
         type: undefined,
+        sort: undefined,
+        by: undefined,
       },
-      sortOptions: [{ label: 'ID Ascending', key: 'asc', active: false }, { label: 'ID Descending', key: 'desc', active: true }],
-      importanceOptions: [1, 2, 3],
-      calendarTypeOptions,
+      sortOptions: [{
+        label: 'ID Ascending',
+        key: 'asc',
+        active: false,
+      }, {
+        label: 'ID Descending',
+        key: 'desc',
+        active: true,
+      }],
+      fillterStatusOptions: [{
+        label: 'All',
+        key: '-1',
+        active: true,
+      }, {
+        label: 'Deactive',
+        key: '0',
+        active: false,
+      }, {
+        label: 'Active',
+        key: '1',
+        active: false,
+      }],
+      sortByOptions: [{
+        label: 'ID',
+        key: 'id',
+        active: false,
+      }, {
+        label: 'Name',
+        key: 'name',
+        active: false,
+      }, {
+        label: 'order',
+        key: 'order',
+        active: false,
+      }, {
+        label: 'status',
+        key: 'is_active',
+        active: false,
+      }, {
+        label: 'Date',
+        key: 'created_at',
+        active: false,
+      }],
       statusOptions: ['Deactive', 'Active'],
       listRecursive: [{
         id: '0',
@@ -320,9 +362,17 @@ export default {
       data.unshift(this.listRecursive[0]);
       this.listRecursive = data;
     },
-    handleFilter(e) {
-      if (e) {
+    handleFilter(type, e) {
+      if (type === 'sort' && e) {
         this.sortOptions.filter(function(elem){
+          if (elem.key === e){
+            elem.active = true;
+          } else {
+            elem.active = false;
+          }
+        });
+      } else if (type === 'filter' && e) {
+        this.fillterStatusOptions.filter(function(elem){
           if (elem.key === e){
             elem.active = true;
           } else {

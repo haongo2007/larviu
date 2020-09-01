@@ -4,7 +4,7 @@ namespace App\Http\Resources;
 
 use Illuminate\Http\Resources\Json\JsonResource;
 
-class CatalogCollection extends JsonResource
+class BrandCollection extends JsonResource
 {
     /**
      * Transform the resource collection into an array.
@@ -21,7 +21,6 @@ class CatalogCollection extends JsonResource
             'order' => $this->order,
             'created_at' => $this->created_at,
             'creator' => $this->Creator->name,
-            'parent' => $this->Parent,
             'banner' => $this->Banner->url
         ];
     }

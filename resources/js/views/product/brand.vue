@@ -2,13 +2,13 @@
   <div class="app-container">
     <div class="filter-container">
       <el-input v-model="listQuery.name" :placeholder="$t('table.name')" style="width: 200px;" class="filter-item" @keyup.enter.native="handleFilter" />
-      <el-select v-model="listQuery.importance" :placeholder="$t('table.importance')" clearable style="width: 90px" class="filter-item">
-        <el-option v-for="item in importanceOptions" :key="item" :label="item" :value="item" />
+      <el-select v-model="listQuery.is_active" :placeholder="$t('table.status')" style="width: 90px" class="filter-item" clearable @change="handleFilter('filter',listQuery.is_active)">
+        <el-option v-for="item in fillterStatusOptions" :key="item.key" :label="item.label" :value="item.key" :disabled="item.active" />
       </el-select>
-      <el-select v-model="listQuery.type" :placeholder="$t('table.type')" clearable class="filter-item" style="width: 130px">
-        <el-option v-for="item in calendarTypeOptions" :key="item.key" :label="item.display_name+'('+item.key+')'" :value="item.key" />
+      <el-select v-model="listQuery.by" :placeholder="$t('Sort by')" clearable class="filter-item" style="width: 130px">
+        <el-option v-for="item in sortByOptions" :key="item.key" :value="item.key" :label="item.label" />
       </el-select>
-      <el-select v-model="listQuery.sort" style="width: 140px" class="filter-item" @change="handleFilter(listQuery.sort)">
+      <el-select v-model="listQuery.sort" style="width: 140px" class="filter-item" @change="handleFilter('sort',listQuery.sort)">
         <el-option v-for="item in sortOptions" :key="item.key" :label="item.label" :value="item.key" :disabled="item.active" />
       </el-select>
       <el-button v-waves class="filter-item" type="primary" icon="el-icon-search" @click="handleFilter">
@@ -53,19 +53,14 @@
           </el-image>
         </template>
       </el-table-column>
-      <el-table-column :label="$t('table.parent')" min-width="75px">
+      <el-table-column :label="$t('order')" width="110px" align="center">
         <template slot-scope="scope">
-          <el-tag type="warning">{{ scope.row.parent ? scope.row.parent.name : 'Parent' }}</el-tag>
+          <span style="color:red;">{{ scope.row.order }}</span>
         </template>
       </el-table-column>
       <el-table-column :label="$t('creator')" width="110px" align="center">
         <template slot-scope="scope">
           <span>{{ scope.row.creator }}</span>
-        </template>
-      </el-table-column>
-      <el-table-column :label="$t('order')" width="110px" align="center">
-        <template slot-scope="scope">
-          <span style="color:red;">{{ scope.row.order }}</span>
         </template>
       </el-table-column>
       <el-table-column :label="$t('table.status')" class-name="status-col" width="100">
@@ -106,16 +101,6 @@
           <el-select v-model="temp.is_active" class="filter-item" placeholder="Please select">
             <el-option v-for="(item,index) in statusOptions" :key="item" :label="item" :value="index" />
           </el-select>
-        </el-form-item>
-        <el-form-item :label="$t('table.parent')" prop="parent">
-          <el-cascader
-            v-model="temp.parent"
-            :options="listRecursive"
-            :props="defaultProps"
-            :show-all-levels="false"
-            clearable
-            filterable
-          />
         </el-form-item>
         <el-form-item :label="$t('table.banner')">
           <el-upload
@@ -161,30 +146,30 @@
 </template>
 
 <script>
-import CategoryResource from '@/api/category';
+import BrandResource from '@/api/brand';
 import waves from '@/directive/waves'; // Waves directive
 import { parseTime } from '@/utils';
 import Pagination from '@/components/Pagination'; // Secondary package based on el-pagination
 import FileManager from '@/components/FileManager';
 import EventBus from '@/components/FileManager/eventBus';
 
-const calendarTypeOptions = [
-  { key: 'CN', display_name: 'China' },
-  { key: 'US', display_name: 'USA' },
-  { key: 'JA', display_name: 'Japan' },
-  { key: 'VI', display_name: 'Vietnam' },
-];
+// const calendarTypeOptions = [
+//   { key: 'CN', display_name: 'China' },
+//   { key: 'US', display_name: 'USA' },
+//   { key: 'JA', display_name: 'Japan' },
+//   { key: 'VI', display_name: 'Vietnam' },
+// ];
 
 // arr to obj ,such as { CN : "China", US : "USA" }
-const calendarTypeKeyValue = calendarTypeOptions.reduce((acc, cur) => {
-  acc[cur.key] = cur.display_name;
-  return acc;
-}, {});
+// const calendarTypeKeyValue = calendarTypeOptions.reduce((acc, cur) => {
+//   acc[cur.key] = cur.display_name;
+//   return acc;
+// }, {});
 
-const categoryResource = new CategoryResource();
+const brandResource = new BrandResource();
 
 export default {
-  name: 'ComplexTable',
+  name: 'Brand',
   components: { Pagination, FileManager },
   directives: { waves },
   filters: {
@@ -195,9 +180,9 @@ export default {
       };
       return statusMap[status];
     },
-    typeFilter(type) {
-      return calendarTypeKeyValue[type];
-    },
+    // typeFilter(type) {
+    //   return calendarTypeKeyValue[type];
+    // },
   },
   data() {
     return {
@@ -207,12 +192,6 @@ export default {
       dialogStorageVisible: false,
       disableUpload: false,
       disableUseStorage: false,
-      defaultProps: {
-        children: 'children',
-        label: 'name',
-        value: 'id',
-        checkStrictly: true,
-      },
       tableKey: 0,
       list: null,
       total: 0,
@@ -221,25 +200,61 @@ export default {
       listQuery: {
         page: 1,
         limit: 20,
-        importance: undefined,
+        is_active: undefined,
         name: undefined,
         type: undefined,
+        sort: undefined,
+        by: undefined,
       },
-      sortOptions: [{ label: 'ID Ascending', key: 'asc', active: false }, { label: 'ID Descending', key: 'desc', active: true }],
-      importanceOptions: [1, 2, 3],
-      calendarTypeOptions,
-      statusOptions: ['Deactive', 'Active'],
-      listRecursive: [{
-        id: '0',
-        id_parent: 0,
-        name: 'Is parent',
+      sortOptions: [{
+        label: 'ID Ascending',
+        key: 'asc',
+        active: false,
+      }, {
+        label: 'ID Descending',
+        key: 'desc',
+        active: true,
       }],
+      fillterStatusOptions: [{
+        label: 'All',
+        key: '-1',
+        active: true,
+      }, {
+        label: 'Deactive',
+        key: '0',
+        active: false,
+      }, {
+        label: 'Active',
+        key: '1',
+        active: false,
+      }],
+      sortByOptions: [{
+        label: 'ID',
+        key: 'id',
+        active: false,
+      }, {
+        label: 'Name',
+        key: 'name',
+        active: false,
+      }, {
+        label: 'order',
+        key: 'order',
+        active: false,
+      }, {
+        label: 'status',
+        key: 'is_active',
+        active: false,
+      }, {
+        label: 'Date',
+        key: 'created_at',
+        active: false,
+      }],
+      statusOptions: ['Deactive', 'Active'],
       // showReviewer: false,
       temp: {
         id: undefined,
         name: '',
         order: '',
-        parent: undefined,
         is_active: undefined,
         banner: [],
       },
@@ -258,13 +273,6 @@ export default {
             type: 'number',
             message: 'order must be a number',
             trigger: 'blur',
-          },
-        ],
-        parent: [
-          {
-            required: true,
-            message: 'parent is required',
-            trigger: 'change',
           },
         ],
         status: [
@@ -305,24 +313,23 @@ export default {
     },
     async getList() {
       this.listLoading = true;
-      const data = await categoryResource.list(this.listQuery);
+      const data = await brandResource.list(this.listQuery);
       this.list = data.data;
       this.total = data.meta.total;
       // Just to simulate the time of the request
       this.listLoading = false;
     },
-    async getRecursive(id){
-      const loading = this.$loading({
-        target: '.el-dialog',
-      });
-      const data = await categoryResource.getRecursive(id);
-      loading.close();
-      data.unshift(this.listRecursive[0]);
-      this.listRecursive = data;
-    },
-    handleFilter(e) {
-      if (e) {
+    handleFilter(type, e) {
+      if (type === 'sort' && e) {
         this.sortOptions.filter(function(elem){
+          if (elem.key === e){
+            elem.active = true;
+          } else {
+            elem.active = false;
+          }
+        });
+      } else if (type === 'filter' && e) {
+        this.fillterStatusOptions.filter(function(elem){
           if (elem.key === e){
             elem.active = true;
           } else {
@@ -338,7 +345,6 @@ export default {
         id: undefined,
         name: undefined,
         order: undefined,
-        parent: undefined,
         status: undefined,
         banner: [],
       };
@@ -351,7 +357,6 @@ export default {
       this.disableUseStorage = false;
       this.fileStorage = '';
 
-      this.getRecursive();
       this.dialogStatus = 'create';
       this.dialogFormVisible = true;
       this.$nextTick(() => {
@@ -368,7 +373,7 @@ export default {
           for (var key in this.temp) {
             form_data.append(key, this.temp[key]);
           }
-          categoryResource.store(form_data).then((res) => {
+          brandResource.store(form_data).then((res) => {
             if (res) {
               res.banner = res.banner.url;
               this.list.unshift(res);
@@ -389,19 +394,20 @@ export default {
       });
     },
     handleUpdate(row) {
+      const loading = this.$loading({
+        target: '.el-dialog',
+      });
       this.fileList = [];
       this.resetTemp();
       this.temp = Object.assign({}, row); // copy obj
-      this.getRecursive(row.id).then((res) => {
-        this.temp.parent = row.parent ? row.parent.id : '0';
-        this.disableUpload = true;
-        this.temp.order = parseInt(row.order);
-        this.temp.is_active = parseInt(row.is_active);
-        this.fileStorage = row.banner + '&w=644';
-      });
-      // check has child and disabled all them
-
+      // refresh temp
+      this.disableUpload = true;
+      this.temp.order = parseInt(row.order);
+      this.temp.is_active = parseInt(row.is_active);
+      this.fileStorage = row.banner + '&w=644';
       this.dialogStatus = 'update';
+      // open dialog
+      loading.close();
       this.dialogFormVisible = true;
       this.$nextTick(() => {
         this.$refs['dataForm'].clearValidate();
@@ -420,7 +426,7 @@ export default {
           }
 
           // tempData.timestamp = +new Date(tempData.timestamp); // change Thu Nov 30 2017 16:41:05 GMT+0800 (CST) to 1512031311464
-          categoryResource.update(this.temp.id, form_data).then((res) => {
+          brandResource.update(this.temp.id, form_data).then((res) => {
             for (const v of this.list) {
               if (v.id === res.id) {
                 const index = this.list.indexOf(v);
@@ -471,7 +477,7 @@ export default {
         cancelButtonText: 'Cancel',
         type: 'warning',
       }).then(() => {
-        categoryResource.destroy(row.id).then((res) => {
+        brandResource.destroy(row.id).then((res) => {
           const index = this.list.indexOf(row);
           this.list.splice(index, 1);
           this.$message({
