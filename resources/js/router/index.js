@@ -13,6 +13,7 @@ Vue.use(Router);
 import Layout from '@/layout';
 
 /* Router for modules */
+import productcategoryRoutes from './modules/product_manage';
 import elementUiRoutes from './modules/element-ui';
 import componentRoutes from './modules/components';
 import chartsRoutes from './modules/charts';
@@ -149,6 +150,7 @@ export const constantRoutes = [
 
 // routes has children routes
 export const asyncRoutes = [
+  productcategoryRoutes,
   permissionRoutes,
   componentRoutes,
   chartsRoutes,

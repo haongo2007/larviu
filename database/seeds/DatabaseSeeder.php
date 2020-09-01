@@ -1,7 +1,7 @@
 <?php
 
 use App\Larviu\Models\User;
-use App\Larviu\Models\Catalog;
+use App\Larviu\Models\Category;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Hash;
 use App\Larviu\Models\Role;
@@ -52,6 +52,6 @@ class DatabaseSeeder extends Seeder
         $user->syncRoles($userRole);
         $visitor->syncRoles($visitorRole);
         $this->call(UsersTableSeeder::class);
-        $this->call(CatalogTableSeeder::class);
+        //$this->call(CategoryTableSeeder::class);
     }
 }

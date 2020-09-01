@@ -5,7 +5,7 @@
         <el-menu class="el-menu-demo" mode="horizontal">
 
           <el-menu-item index="1" :disabled="backDisabled" @click="historyBack()"><i class="fas fa-step-backward" /></el-menu-item>
-          <el-menu-item index="2" :disabled="forwardDisabled" @click="refreshAll()"><i class="fas fa-sync-alt" /></el-menu-item>
+          <el-menu-item index="2" @click="refreshAll()"><i class="fas fa-sync-alt" /></el-menu-item>
           <el-menu-item index="3" :disabled="forwardDisabled" @click="historyForward()"><i class="fas fa-step-forward" /></el-menu-item>
 
           <el-submenu index="4">

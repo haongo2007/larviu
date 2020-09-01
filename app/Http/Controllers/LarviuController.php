@@ -33,11 +33,14 @@ class LarviuController extends Controller
     {
     	$path = explode('/', $request->path);
     	$filename = last($path);
-    	$file_record = StorageFile::where('name',$filename)->first();
+    	$file_record = StorageFile::where('name',$filename)->whereNull('type')->first();
+        $extension = substr(strstr($filename, '.'), 1);
+
     	if (!$file_record) {
         	$file_record = StorageFile::create([
                 'name' => $filename,
-                'url' => 'api/getFile?disk='.env('FILESYSTEM_DRIVER', 'local').'&path='.urlencode($request->path)
+                'url' => 'api/getFile?disk='.env('FILESYSTEM_DRIVER', 'local').'&path='.urlencode($request->path),
+                'extension' => $extension,
             ]);
     	}
         return [

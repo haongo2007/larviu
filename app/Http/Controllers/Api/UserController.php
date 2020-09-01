@@ -94,9 +94,9 @@ class UserController extends BaseController
      * @param  User $user
      * @return UserCollection|\Illuminate\Http\JsonResponse
      */
-    public function show(User $user)
+    public function show(Request $request)
     {
-        return new UserCollection($user);
+        return new UserCollection($request->user());
     }
 
     /**

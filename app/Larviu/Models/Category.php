@@ -4,14 +4,14 @@ namespace App\Larviu\Models;
 
 use Illuminate\Database\Eloquent\Model;
 
-class Catalog extends Model
+class Category extends Model
 {
     public $guard_name = 'api';
 
-    protected $table="catalog";
+    protected $table="category";
 
     protected $fillable = [
-        'name', 'order', 'is_active', 'id_parent', 'slug', 'creator'
+        'name', 'order', 'is_active', 'id_parent', 'slug', 'creator', 'id_banner'
     ];
     public function Creator()
     {
@@ -27,6 +27,6 @@ class Catalog extends Model
     }
     public function Banner()
     {
-        return $this->belongsTo(StorageFile::class,'id','extension')->where('type','catalog');
+        return $this->belongsTo(StorageFile::class,'id_banner')->where('type','category');
     }
 }
